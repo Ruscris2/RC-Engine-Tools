@@ -5,6 +5,8 @@ VisualStudioVersion = 14.0.25123.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "OBJ2RCM", "OBJ2RCM\OBJ2RCM.vcxproj", "{C42671C6-2022-41FA-8CF9-6168CA61D7CF}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "PNG2RCT", "PNG2RCT\PNG2RCT.vcxproj", "{12697765-718A-4D6A-8CC1-67ED1ADD869E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -21,6 +23,14 @@ Global
 		{C42671C6-2022-41FA-8CF9-6168CA61D7CF}.Release|x64.Build.0 = Release|x64
 		{C42671C6-2022-41FA-8CF9-6168CA61D7CF}.Release|x86.ActiveCfg = Release|Win32
 		{C42671C6-2022-41FA-8CF9-6168CA61D7CF}.Release|x86.Build.0 = Release|Win32
+		{12697765-718A-4D6A-8CC1-67ED1ADD869E}.Debug|x64.ActiveCfg = Debug|x64
+		{12697765-718A-4D6A-8CC1-67ED1ADD869E}.Debug|x64.Build.0 = Debug|x64
+		{12697765-718A-4D6A-8CC1-67ED1ADD869E}.Debug|x86.ActiveCfg = Debug|Win32
+		{12697765-718A-4D6A-8CC1-67ED1ADD869E}.Debug|x86.Build.0 = Debug|Win32
+		{12697765-718A-4D6A-8CC1-67ED1ADD869E}.Release|x64.ActiveCfg = Release|x64
+		{12697765-718A-4D6A-8CC1-67ED1ADD869E}.Release|x64.Build.0 = Release|x64
+		{12697765-718A-4D6A-8CC1-67ED1ADD869E}.Release|x86.ActiveCfg = Release|Win32
+		{12697765-718A-4D6A-8CC1-67ED1ADD869E}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
