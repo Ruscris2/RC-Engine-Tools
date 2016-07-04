@@ -1,0 +1,11 @@
+*.obj
+*.exe
+*.iobj
+*.ipdb
+*.pdb
+*.ilk
+*.rcm
+*.tlog
+*.log
+*.db
+*.idb
