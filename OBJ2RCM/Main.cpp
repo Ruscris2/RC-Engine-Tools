@@ -30,6 +30,7 @@ struct Vertex
 {
 	float x, y, z;
 	float u, v;
+	float nx, ny, nz;
 };
 
 void SetTextColor(COLORS color)
@@ -75,7 +76,7 @@ void PrintCredits()
 	SetTextColor(COLOR_YELLOW);
 	cout << "-----------------------------------------------\n";
 	cout << "|         OBJ2RCM - RC-Engine (c) 2016        |\n";
-	cout << "|                v0.1-build1                  |\n";
+	cout << "|                v0.1-build2                  |\n";
 	cout << "|                                             |\n";
 	cout << "|         Programmed by: Ruscris2             |\n";
 	cout << "|                                             |\n";
@@ -132,6 +133,9 @@ void ConvertToRCM()
 			{
 				vertices[face.mIndices[k]].u = mesh->mTextureCoords[0][face.mIndices[k]].x;
 				vertices[face.mIndices[k]].v = mesh->mTextureCoords[0][face.mIndices[k]].y;
+				vertices[face.mIndices[k]].nx = mesh->mNormals[face.mIndices[k]].x;
+				vertices[face.mIndices[k]].ny = mesh->mNormals[face.mIndices[k]].y;
+				vertices[face.mIndices[k]].nz = mesh->mNormals[face.mIndices[k]].z;
 
 				indices.push_back(face.mIndices[k]);
 			}
