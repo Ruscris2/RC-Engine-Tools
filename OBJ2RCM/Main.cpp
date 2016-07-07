@@ -76,7 +76,7 @@ void PrintCredits()
 	SetTextColor(COLOR_YELLOW);
 	cout << "-----------------------------------------------\n";
 	cout << "|         OBJ2RCM - RC-Engine (c) 2016        |\n";
-	cout << "|                v0.1-build2                  |\n";
+	cout << "|                v0.1-build3                  |\n";
 	cout << "|                                             |\n";
 	cout << "|         Programmed by: Ruscris2             |\n";
 	cout << "|                                             |\n";
@@ -108,13 +108,25 @@ void ConvertToRCM()
 		return;
 	}
 
-	cout << "Got " << scene->mNumMeshes << " mesh(es)!\n";
+	unsigned int meshCount = scene->mNumMeshes;
+	unsigned int totalVertexCount = 0;
+	unsigned int totalIndexCount = 0;
+
+	cout << "Got " << meshCount << " mesh(es)!\n";
 	vector<Vertex> vertices;
 	vector<uint32_t> indices;
 
+	SetTextColor(COLOR_GREEN);
+	FILE * output = fopen((outputPath + filename + ".rcm").c_str(), "wb");
+	cout << "Writing data to .rcm file...\n";
+	cout << "Writing header...\n";
+	fwrite(&meshCount, sizeof(unsigned int), 1, output);
+
+	SetTextColor(COLOR_WHITE);
 	for (unsigned int i = 0; i < scene->mNumMeshes; i++)
 	{
 		aiMesh * mesh = scene->mMeshes[i];
+		aiMaterial * material = scene->mMaterials[mesh->mMaterialIndex];
 
 		for (unsigned int j = 0; j < mesh->mNumVertices; j++)
 		{
@@ -140,26 +152,43 @@ void ConvertToRCM()
 				indices.push_back(face.mIndices[k]);
 			}
 		}
+
+		unsigned int vertexCount = vertices.size();
+		unsigned int indexCount = indices.size();
+		totalVertexCount += vertices.size();
+		totalIndexCount += indices.size();
+
+		fwrite(&vertexCount, sizeof(unsigned int), 1, output);
+		fwrite(&indexCount, sizeof(unsigned int), 1, output);
+		fwrite(vertices.data(), sizeof(Vertex), vertices.size(), output);
+		fwrite(indices.data(), sizeof(uint32_t), indices.size(), output);
+
+		cout << "MESH [" << i << "] VERTICES [" << vertexCount << "] INDICES [" << indexCount << "] ";
+
+		aiString tmpStr;
+		char diffuseTextureName[64] = "NONE";
+		if (material->GetTexture(aiTextureType_DIFFUSE, 0, &tmpStr) == AI_SUCCESS)
+		{
+			cout << "DIFFUSE [YES]";
+			memcpy(diffuseTextureName, tmpStr.C_Str(), sizeof(char) * strlen(tmpStr.C_Str()));
+		}
+		else
+			cout << "DIFFUSE [NO]";
+		cout << '\n';
+
+		fwrite(diffuseTextureName, sizeof(char), 64, output);
+
+		vertices.clear();
+		indices.clear();
 	}
-
-	SetTextColor(COLOR_GREEN);
-	FILE * output = fopen((outputPath + filename + ".rcm").c_str(), "wb");
-	cout << "Writing data to .rcm file...\n";
-
-	unsigned int vertexCount = vertices.size();
-	unsigned int indexCount = indices.size();
-
-	fwrite(&vertexCount, sizeof(unsigned int), 1, output);
-	fwrite(&indexCount, sizeof(unsigned int), 1, output);
-	fwrite(vertices.data(), sizeof(Vertex), vertices.size(), output);
-	fwrite(indices.data(), sizeof(uint32_t), indices.size(), output);
 
 	fclose(output);
 
+	SetTextColor(COLOR_GREEN);
 	cout << "File successfully converted!\n";
 	SetTextColor(COLOR_BLUE);
 	cout << "FILE INFO:\n";
-	cout << "VERTICES [" << vertexCount << "] INDICES [" << indexCount << "]\n";
+	cout << "VERTICES [" << totalVertexCount << "] INDICES [" << totalIndexCount << "]\n";
 }
 
 int main()
