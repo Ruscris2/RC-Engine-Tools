@@ -76,7 +76,7 @@ void PrintCredits()
 	SetTextColor(COLOR_YELLOW);
 	cout << "-----------------------------------------------\n";
 	cout << "|         OBJ2RCM - RC-Engine (c) 2016        |\n";
-	cout << "|                v0.1-build3                  |\n";
+	cout << "|                v0.1-build4                  |\n";
 	cout << "|                                             |\n";
 	cout << "|         Programmed by: Ruscris2             |\n";
 	cout << "|                                             |\n";
@@ -167,16 +167,29 @@ void ConvertToRCM()
 
 		aiString tmpStr;
 		char diffuseTextureName[64] = "NONE";
+		char specularTextureName[64] = "NONE";
+
 		if (material->GetTexture(aiTextureType_DIFFUSE, 0, &tmpStr) == AI_SUCCESS)
 		{
-			cout << "DIFFUSE [YES]";
+			cout << "DIFFUSE [YES] ";
 			memcpy(diffuseTextureName, tmpStr.C_Str(), sizeof(char) * strlen(tmpStr.C_Str()));
 		}
 		else
-			cout << "DIFFUSE [NO]";
-		cout << '\n';
+			cout << "DIFFUSE [NO] ";
 
 		fwrite(diffuseTextureName, sizeof(char), 64, output);
+
+		if (material->GetTexture(aiTextureType_SPECULAR, 0, &tmpStr) == AI_SUCCESS)
+		{
+			cout << "SPECULAR [YES]";
+			memcpy(specularTextureName, tmpStr.C_Str(), sizeof(char) * strlen(tmpStr.C_Str()));
+		}
+		else
+			cout << "SPECULAR [NO]";
+
+		fwrite(specularTextureName, sizeof(char), 64, output);
+
+		cout << '\n';
 
 		vertices.clear();
 		indices.clear();
