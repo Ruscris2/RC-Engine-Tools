@@ -14,3 +14,6 @@ OBJ2RCM is a tool used for converting .obj files containing 3D model data to the
 
 ## PNG2RCT
 PNG2RCT is a tool used to convert .png files to .rct texture files used by RC-Engine.
+
+## FBX2RCS
+FBX2RCS is a tool used to convert .fbx files containing 3D models with bone data into .rcs files used by RC-Engine.
