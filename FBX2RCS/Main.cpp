@@ -50,6 +50,8 @@ struct VertexBoneData
 	}
 };
 
+std::vector<aiMatrix4x4> boneOffsets;
+
 void loadBones(aiMesh * mesh, vector<VertexBoneData>& vertexBoneData, map<string, uint32_t>& boneMapping, uint32_t& numBones)
 {
 	for (uint32_t i = 0; i < mesh->mNumBones; i++)
@@ -61,6 +63,8 @@ void loadBones(aiMesh * mesh, vector<VertexBoneData>& vertexBoneData, map<string
 		if (boneMapping.find(boneName) == boneMapping.end())
 		{
 			// New bone, add to bone list
+			boneOffsets.push_back(mesh->mBones[i]->mOffsetMatrix);
+
 			index = numBones;
 			numBones++;
 
@@ -221,6 +225,22 @@ void ConvertToRCS()
 		vertices.clear();
 		indices.clear();
 		vertexBoneData.clear();
+	}
+
+	// Write bone matrix offsets
+	unsigned int boneCount = boneOffsets.size();
+	fwrite(&boneCount, sizeof(unsigned int), 1, output);
+	fwrite(boneOffsets.data(), sizeof(aiMatrix4x4), boneCount, output);
+	
+	// Write bone mapping
+	map<string, uint32_t>::iterator it;
+	for (it = boneMapping.begin(); it != boneMapping.end(); it++)
+	{
+		unsigned int strSize = it->first.size();
+		fwrite(&strSize, sizeof(unsigned int), 1, output);
+		fwrite(it->first.data(), sizeof(char), strSize, output);
+
+		fwrite(&it->second, sizeof(uint32_t), 1, output);
 	}
 
 	fclose(output);
