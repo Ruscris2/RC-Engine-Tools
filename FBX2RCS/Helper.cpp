@@ -66,10 +66,18 @@ void PrintCredits()
 
 char * GetFilenameFromPath(char * path)
 {
+	// Is path format dir\dir\file.png ?
 	char * filename = strrchr(path, '\\');
+
+	// Is path format dir/dir/file.png ?
 	if (filename == NULL)
 		filename = strrchr(path, '/');
-	filename++;
+
+	// There is no path, filename was specified
+	if (filename != NULL)
+		filename++;
+	else
+		filename = path;
 
 	char * extension = strrchr(filename, '.');
 	extension++;
