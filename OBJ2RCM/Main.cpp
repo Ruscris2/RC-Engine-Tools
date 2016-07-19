@@ -8,6 +8,7 @@
 #define NOMINMAX
 
 #include <iostream>
+#include <fstream>
 #include <string>
 #include <vector>
 #include <assimp/Importer.hpp>
@@ -58,7 +59,9 @@ void ConvertToRCM()
 
 	SetTextColor(COLOR_GREEN);
 	FILE * output = fopen((outputPath + filename + ".rcm").c_str(), "wb");
-	cout << "Writing data to .rcm file...\n";
+	ofstream outputMat(outputPath + filename + ".mat");
+
+	cout << "Writing data to .rcm and .mat file...\n";
 	cout << "Writing header...\n";
 	fwrite(&meshCount, sizeof(unsigned int), 1, output);
 
@@ -68,6 +71,7 @@ void ConvertToRCM()
 		aiMesh * mesh = scene->mMeshes[i];
 		aiMaterial * material = scene->mMaterials[mesh->mMaterialIndex];
 
+		// Write .rcm file data
 		for (unsigned int j = 0; j < mesh->mNumVertices; j++)
 		{
 			Vertex vertex;
@@ -119,7 +123,11 @@ void ConvertToRCM()
 		else
 			cout << "DIFFUSE [NO] ";
 
+		// Write diffuse texture name
 		fwrite(diffuseTextureName, sizeof(char), 64, output);
+
+		// Write material file
+		outputMat << diffuseTextureName << ' ' << 32.0f << ' ' << 1.0f << '\n';
 
 		if (material->GetTexture(aiTextureType_SPECULAR, 0, &tmpStr) == AI_SUCCESS)
 		{
@@ -131,6 +139,7 @@ void ConvertToRCM()
 		else
 			cout << "SPECULAR [NO]";
 
+		// Write specular texture name
 		fwrite(specularTextureName, sizeof(char), 64, output);
 
 		cout << '\n';
@@ -140,6 +149,7 @@ void ConvertToRCM()
 	}
 
 	fclose(output);
+	outputMat.close();
 
 	SetTextColor(COLOR_GREEN);
 	cout << "File successfully converted!\n";

@@ -55,7 +55,7 @@ void PrintCredits()
 	SetTextColor(COLOR_YELLOW);
 	cout << "-----------------------------------------------\n";
 	cout << "|         FBX2RCS - RC-Engine (c) 2016        |\n";
-	cout << "|                v0.1-build2                  |\n";
+	cout << "|                v0.1-build3                  |\n";
 	cout << "|                                             |\n";
 	cout << "|         Programmed by: Ruscris2             |\n";
 	cout << "|                                             |\n";

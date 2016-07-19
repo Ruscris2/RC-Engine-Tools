@@ -8,6 +8,7 @@
 #define NOMINMAX
 
 #include <iostream>
+#include <fstream>
 #include <string>
 #include <vector>
 #include <array>
@@ -122,17 +123,19 @@ void ConvertToRCS()
 	// Write header
 	SetTextColor(COLOR_GREEN);
 	FILE * output = fopen((outputPath + filename + ".rcs").c_str(), "wb");
+	ofstream outputMat(outputPath + filename + ".mat");
+
 	cout << "Writing data to .rcs file...\n";
 	cout << "Writing header...\n";
 	fwrite(&meshCount, sizeof(unsigned int), 1, output);
-
+	
 	// Iterate meshes
 	SetTextColor(COLOR_WHITE);
 	for (unsigned int i = 0; i < scene->mNumMeshes; i++)
 	{
 		aiMesh * mesh = scene->mMeshes[i];
 		aiMaterial * material = scene->mMaterials[mesh->mMaterialIndex];
-
+		
 		// Store all vertices on current mesh
 		for (unsigned int j = 0; j < mesh->mNumVertices; j++)
 		{
@@ -205,6 +208,9 @@ void ConvertToRCS()
 		// Write current mesh diffuse texture name to file.
 		fwrite(diffuseTextureName, sizeof(char), 64, output);
 
+		// Write material file
+		outputMat << diffuseTextureName << ' ' << 32.0f << ' ' << 1.0f << '\n';
+
 		// Read current mesh specular texture name.
 		if (material->GetTexture(aiTextureType_SPECULAR, 0, &tmpStr) == AI_SUCCESS)
 		{
@@ -244,6 +250,7 @@ void ConvertToRCS()
 	}
 
 	fclose(output);
+	outputMat.close();
 
 	SetTextColor(COLOR_GREEN);
 	cout << "File successfully converted!\n";
