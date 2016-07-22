@@ -39,7 +39,7 @@ void SetTextColor(COLORS color)
 
 void PrintWelcomeMessage()
 {
-	SetTextColor(COLOR_YELLOW);
+	SetTextColor(COLOR_BLUE);
 	cout << "-----------------------------------------------\n";
 	cout << "|         Welcome to FBX2RCS converter!       |\n";
 	cout << "|                                             |\n";
@@ -52,7 +52,7 @@ void PrintWelcomeMessage()
 
 void PrintCredits()
 {
-	SetTextColor(COLOR_YELLOW);
+	SetTextColor(COLOR_BLUE);
 	cout << "-----------------------------------------------\n";
 	cout << "|         FBX2RCS - RC-Engine (c) 2016        |\n";
 	cout << "|                v0.1-build3                  |\n";
