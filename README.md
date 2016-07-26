@@ -17,3 +17,6 @@ PNG2RCT is a tool used to convert .png files to .rct texture files used by RC-En
 
 ## FBX2RCS
 FBX2RCS is a tool used to convert .fbx files containing 3D models with bone data into .rcs files used by RC-Engine.
+
+## OBJ2COL
+OBJ2COL is a tool used to convert .obj files into files containing collision information (.col) used by RC-Engine.
