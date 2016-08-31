@@ -14,6 +14,7 @@
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
+#include <glm/glm.hpp>
 
 #include "Helper.h"
 
@@ -25,6 +26,30 @@ struct Vertex
 	float u, v;
 	float nx, ny, nz;
 };
+
+float GetFrustumCullRadius(std::string filename)
+{
+	float radius = 0.0f;
+	Assimp::Importer importer;
+	const aiScene * scene = importer.ReadFile(filename, aiProcess_MakeLeftHanded | aiProcess_FlipWindingOrder | aiProcess_JoinIdenticalVertices);
+
+	glm::vec3 modelCenter = glm::vec3(0.0f, 0.0f, 0.0f);
+	glm::vec3 currentVertex;
+
+	for (unsigned int i = 0; i < scene->mNumMeshes; i++)
+	{
+		aiMesh * mesh = scene->mMeshes[i];
+		for (unsigned int j = 0; j < mesh->mNumVertices; j++)
+		{
+			currentVertex = glm::vec3(mesh->mVertices[j].x, mesh->mVertices[j].y, mesh->mVertices[j].z);
+			float currentDistance = glm::distance(modelCenter, currentVertex);
+			if (currentDistance > radius)
+				radius = currentDistance;
+		}
+	}
+
+	return radius;
+}
 
 void ConvertToRCM()
 {
@@ -64,6 +89,10 @@ void ConvertToRCM()
 	cout << "Writing data to .rcm and .mat file...\n";
 	cout << "Writing header...\n";
 	fwrite(&meshCount, sizeof(unsigned int), 1, output);
+	
+	cout << "Generating frustum cull radius...\n";
+	float frustumCullRadius = GetFrustumCullRadius(inputPath + filename + ".obj");
+	fwrite(&frustumCullRadius, sizeof(float), 1, output);
 
 	SetTextColor(COLOR_WHITE);
 	for (unsigned int i = 0; i < scene->mNumMeshes; i++)
@@ -156,6 +185,7 @@ void ConvertToRCM()
 	SetTextColor(COLOR_BLUE);
 	cout << "FILE INFO:\n";
 	cout << "VERTICES [" << totalVertexCount << "] INDICES [" << totalIndexCount << "]\n";
+	cout << "FRUSTUM CULL RADIUS [" << frustumCullRadius << "]\n";
 }
 
 int main()
