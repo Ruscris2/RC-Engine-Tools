@@ -30,6 +30,8 @@ struct Vertex
 	float nx, ny, nz;
 	float boneWeights[4];
 	uint32_t boneIDs[4];
+	float tx, ty, tz;
+	float bx, by, bz;
 };
 
 struct VertexBoneData
@@ -96,7 +98,8 @@ void ConvertToRCS()
 
 	SetTextColor(COLOR_GREEN);
 	cout << "Reading .fbx file...\n";
-	const aiScene * scene = importer.ReadFile((inputPath + filename + ".fbx"), aiProcess_MakeLeftHanded | aiProcess_FlipWindingOrder | aiProcess_FlipUVs | aiProcess_JoinIdenticalVertices);
+	const aiScene * scene = importer.ReadFile((inputPath + filename + ".fbx"), aiProcess_MakeLeftHanded | aiProcess_FlipWindingOrder
+		| aiProcess_FlipUVs | aiProcess_JoinIdenticalVertices | aiProcess_CalcTangentSpace);
 
 	if (!scene)
 	{
@@ -158,6 +161,12 @@ void ConvertToRCS()
 				vertices[face.mIndices[k]].nx = mesh->mNormals[face.mIndices[k]].x;
 				vertices[face.mIndices[k]].ny = mesh->mNormals[face.mIndices[k]].y;
 				vertices[face.mIndices[k]].nz = mesh->mNormals[face.mIndices[k]].z;
+				vertices[face.mIndices[k]].tx = mesh->mTangents[face.mIndices[k]].x;
+				vertices[face.mIndices[k]].ty = mesh->mTangents[face.mIndices[k]].y;
+				vertices[face.mIndices[k]].tz = mesh->mTangents[face.mIndices[k]].z;
+				vertices[face.mIndices[k]].bx = mesh->mBitangents[face.mIndices[k]].x;
+				vertices[face.mIndices[k]].by = mesh->mBitangents[face.mIndices[k]].y;
+				vertices[face.mIndices[k]].bz = mesh->mBitangents[face.mIndices[k]].z;
 
 				indices.push_back(face.mIndices[k]);
 			}
@@ -190,10 +199,11 @@ void ConvertToRCS()
 
 		cout << "MESH [" << i << "] VERTICES [" << vertexCount << "] INDICES [" << indexCount << "] ";
 
-		// Read current mesh diffuse texture name.
+		// Write current mesh diffuse texture name.
 		aiString tmpStr;
 		char diffuseTextureName[64] = "NONE";
 		char specularTextureName[64] = "NONE";
+		char normalTextureName[64] = "NONE";
 
 		if (material->GetTexture(aiTextureType_DIFFUSE, 0, &tmpStr) == AI_SUCCESS)
 		{
@@ -205,27 +215,38 @@ void ConvertToRCS()
 		else
 			cout << "DIFFUSE [NO] ";
 
-		// Write current mesh diffuse texture name to file.
 		fwrite(diffuseTextureName, sizeof(char), 64, output);
 
-		// Write material file
-		outputMat << diffuseTextureName << ' ' << 32.0f << ' ' << 1.0f << '\n';
-
-		// Read current mesh specular texture name.
+		// Write current mesh specular texture name.
 		if (material->GetTexture(aiTextureType_SPECULAR, 0, &tmpStr) == AI_SUCCESS)
 		{
-			cout << "SPECULAR [YES]";
+			cout << "SPECULAR [YES] ";
 			memcpy(specularTextureName, tmpStr.C_Str(), sizeof(char) * strlen(tmpStr.C_Str()));
 			char * strPtr = GetFilenameFromPath(specularTextureName);
 			memcpy(specularTextureName, strPtr, sizeof(char) * strlen(strPtr) + 1);
 		}
 		else
-			cout << "SPECULAR [NO]";
+			cout << "SPECULAR [NO] ";
 
-		// Write current mesh specular texture name.
 		fwrite(specularTextureName, sizeof(char), 64, output);
 
+		// Write current mesh normal texture name.
+		if (material->GetTexture(aiTextureType_HEIGHT, 0, &tmpStr) == AI_SUCCESS)
+		{
+			cout << "NORMAL [YES] ";
+			memcpy(normalTextureName, tmpStr.C_Str(), sizeof(char) * strlen(tmpStr.C_Str()));
+			char * strPtr = GetFilenameFromPath(normalTextureName);
+			memcpy(normalTextureName, strPtr, sizeof(char) * strlen(strPtr) + 1);
+		}
+		else
+			cout << "NORMAL [NO] ";
+
+		fwrite(normalTextureName, sizeof(char), 64, output);
+
 		cout << '\n';
+
+		// Write material file
+		outputMat << diffuseTextureName << ' ' << 32.0f << ' ' << 1.0f << '\n';
 
 		// Re-init per mesh data structures.
 		vertices.clear();

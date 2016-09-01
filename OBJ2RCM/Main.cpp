@@ -25,13 +25,16 @@ struct Vertex
 	float x, y, z;
 	float u, v;
 	float nx, ny, nz;
+	float tx, ty, tz;
+	float bx, by, bz;
 };
 
 float GetFrustumCullRadius(std::string filename)
 {
 	float radius = 0.0f;
 	Assimp::Importer importer;
-	const aiScene * scene = importer.ReadFile(filename, aiProcess_MakeLeftHanded | aiProcess_FlipWindingOrder | aiProcess_JoinIdenticalVertices);
+	const aiScene * scene = importer.ReadFile(filename, aiProcess_MakeLeftHanded | aiProcess_FlipWindingOrder |
+		aiProcess_JoinIdenticalVertices);
 
 	glm::vec3 modelCenter = glm::vec3(0.0f, 0.0f, 0.0f);
 	glm::vec3 currentVertex;
@@ -64,7 +67,8 @@ void ConvertToRCM()
 
 	SetTextColor(COLOR_GREEN);
 	cout << "Reading .obj file...\n";
-	const aiScene * scene = importer.ReadFile((inputPath + filename + ".obj"), aiProcess_MakeLeftHanded | aiProcess_FlipWindingOrder | aiProcess_FlipUVs | aiProcess_JoinIdenticalVertices);
+	const aiScene * scene = importer.ReadFile((inputPath + filename + ".obj"), aiProcess_MakeLeftHanded |
+		aiProcess_FlipWindingOrder | aiProcess_FlipUVs | aiProcess_JoinIdenticalVertices | aiProcess_CalcTangentSpace);
 
 	if (!scene)
 	{
@@ -121,6 +125,12 @@ void ConvertToRCM()
 				vertices[face.mIndices[k]].nx = mesh->mNormals[face.mIndices[k]].x;
 				vertices[face.mIndices[k]].ny = mesh->mNormals[face.mIndices[k]].y;
 				vertices[face.mIndices[k]].nz = mesh->mNormals[face.mIndices[k]].z;
+				vertices[face.mIndices[k]].tx = mesh->mTangents[face.mIndices[k]].x;
+				vertices[face.mIndices[k]].ty = mesh->mTangents[face.mIndices[k]].y;
+				vertices[face.mIndices[k]].tz = mesh->mTangents[face.mIndices[k]].z;
+				vertices[face.mIndices[k]].bx = mesh->mBitangents[face.mIndices[k]].x;
+				vertices[face.mIndices[k]].by = mesh->mBitangents[face.mIndices[k]].y;
+				vertices[face.mIndices[k]].bz = mesh->mBitangents[face.mIndices[k]].z;
 
 				indices.push_back(face.mIndices[k]);
 			}
@@ -141,7 +151,9 @@ void ConvertToRCM()
 		aiString tmpStr;
 		char diffuseTextureName[64] = "NONE";
 		char specularTextureName[64] = "NONE";
+		char normalTextureName[64] = "NONE";
 
+		// Write diffuse texture name
 		if (material->GetTexture(aiTextureType_DIFFUSE, 0, &tmpStr) == AI_SUCCESS)
 		{
 			cout << "DIFFUSE [YES] ";
@@ -152,24 +164,37 @@ void ConvertToRCM()
 		else
 			cout << "DIFFUSE [NO] ";
 
-		// Write diffuse texture name
+		
 		fwrite(diffuseTextureName, sizeof(char), 64, output);
 
-		// Write material file
-		outputMat << diffuseTextureName << ' ' << 32.0f << ' ' << 1.0f << '\n';
-
+		// Write specular texture name
 		if (material->GetTexture(aiTextureType_SPECULAR, 0, &tmpStr) == AI_SUCCESS)
 		{
-			cout << "SPECULAR [YES]";
+			cout << "SPECULAR [YES] ";
 			memcpy(specularTextureName, tmpStr.C_Str(), sizeof(char) * strlen(tmpStr.C_Str()));
 			char * strPtr = GetFilenameFromPath(specularTextureName);
 			memcpy(specularTextureName, strPtr, sizeof(char) * strlen(strPtr) + 1);
 		}
 		else
-			cout << "SPECULAR [NO]";
+			cout << "SPECULAR [NO] ";
 
-		// Write specular texture name
 		fwrite(specularTextureName, sizeof(char), 64, output);
+
+		// Write normal texture name
+		if (material->GetTexture(aiTextureType_HEIGHT, 0, &tmpStr) == AI_SUCCESS)
+		{
+			cout << "NORMAL [YES] ";
+			memcpy(normalTextureName, tmpStr.C_Str(), sizeof(char) * strlen(tmpStr.C_Str()));
+			char * strPtr = GetFilenameFromPath(normalTextureName);
+			memcpy(normalTextureName, strPtr, sizeof(char) * strlen(strPtr) + 1);
+		}
+		else
+			cout << "NORMAL [NO] ";
+
+		fwrite(normalTextureName, sizeof(char), 64, output);
+
+		// Write material file
+		outputMat << diffuseTextureName << ' ' << 32.0f << ' ' << 1.0f << '\n';
 
 		cout << '\n';
 
