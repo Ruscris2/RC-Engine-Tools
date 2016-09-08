@@ -202,7 +202,6 @@ void ConvertToRCS()
 		// Write current mesh diffuse texture name.
 		aiString tmpStr;
 		char diffuseTextureName[64] = "NONE";
-		char specularTextureName[64] = "NONE";
 		char normalTextureName[64] = "NONE";
 
 		if (material->GetTexture(aiTextureType_DIFFUSE, 0, &tmpStr) == AI_SUCCESS)
@@ -216,19 +215,6 @@ void ConvertToRCS()
 			cout << "DIFFUSE [NO] ";
 
 		fwrite(diffuseTextureName, sizeof(char), 64, output);
-
-		// Write current mesh specular texture name.
-		if (material->GetTexture(aiTextureType_SPECULAR, 0, &tmpStr) == AI_SUCCESS)
-		{
-			cout << "SPECULAR [YES] ";
-			memcpy(specularTextureName, tmpStr.C_Str(), sizeof(char) * strlen(tmpStr.C_Str()));
-			char * strPtr = GetFilenameFromPath(specularTextureName);
-			memcpy(specularTextureName, strPtr, sizeof(char) * strlen(strPtr) + 1);
-		}
-		else
-			cout << "SPECULAR [NO] ";
-
-		fwrite(specularTextureName, sizeof(char), 64, output);
 
 		// Write current mesh normal texture name.
 		if (material->GetTexture(aiTextureType_HEIGHT, 0, &tmpStr) == AI_SUCCESS)
@@ -246,7 +232,7 @@ void ConvertToRCS()
 		cout << '\n';
 
 		// Write material file
-		outputMat << diffuseTextureName << ' ' << 32.0f << ' ' << 1.0f << '\n';
+		outputMat << diffuseTextureName << " NONE " << 0.0f << 0.0f << '\n';
 
 		// Re-init per mesh data structures.
 		vertices.clear();

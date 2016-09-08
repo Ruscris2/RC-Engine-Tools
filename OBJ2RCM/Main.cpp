@@ -150,7 +150,6 @@ void ConvertToRCM()
 
 		aiString tmpStr;
 		char diffuseTextureName[64] = "NONE";
-		char specularTextureName[64] = "NONE";
 		char normalTextureName[64] = "NONE";
 
 		// Write diffuse texture name
@@ -167,19 +166,6 @@ void ConvertToRCM()
 		
 		fwrite(diffuseTextureName, sizeof(char), 64, output);
 
-		// Write specular texture name
-		if (material->GetTexture(aiTextureType_SPECULAR, 0, &tmpStr) == AI_SUCCESS)
-		{
-			cout << "SPECULAR [YES] ";
-			memcpy(specularTextureName, tmpStr.C_Str(), sizeof(char) * strlen(tmpStr.C_Str()));
-			char * strPtr = GetFilenameFromPath(specularTextureName);
-			memcpy(specularTextureName, strPtr, sizeof(char) * strlen(strPtr) + 1);
-		}
-		else
-			cout << "SPECULAR [NO] ";
-
-		fwrite(specularTextureName, sizeof(char), 64, output);
-
 		// Write normal texture name
 		if (material->GetTexture(aiTextureType_HEIGHT, 0, &tmpStr) == AI_SUCCESS)
 		{
@@ -194,7 +180,7 @@ void ConvertToRCM()
 		fwrite(normalTextureName, sizeof(char), 64, output);
 
 		// Write material file
-		outputMat << diffuseTextureName << ' ' << 32.0f << ' ' << 1.0f << '\n';
+		outputMat << diffuseTextureName << " NONE " << 0.0f << 0.0f << '\n';
 
 		cout << '\n';
 

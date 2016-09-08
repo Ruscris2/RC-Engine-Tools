@@ -55,7 +55,7 @@ void PrintCredits()
 	SetTextColor(COLOR_YELLOW);
 	cout << "-----------------------------------------------\n";
 	cout << "|         OBJ2RCM - RC-Engine (c) 2016        |\n";
-	cout << "|                v0.1-build8                  |\n";
+	cout << "|                v0.1-build9                  |\n";
 	cout << "|                                             |\n";
 	cout << "|         Programmed by: Ruscris2             |\n";
 	cout << "|                                             |\n";
