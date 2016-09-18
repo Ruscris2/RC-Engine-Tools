@@ -232,7 +232,7 @@ void ConvertToRCS()
 		cout << '\n';
 
 		// Write material file
-		outputMat << diffuseTextureName << " NONE " << 0.0f << 0.0f << '\n';
+		outputMat << diffuseTextureName << " NONE " << 0.0f  << ' ' << 0.0f << '\n';
 
 		// Re-init per mesh data structures.
 		vertices.clear();

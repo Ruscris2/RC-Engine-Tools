@@ -180,7 +180,7 @@ void ConvertToRCM()
 		fwrite(normalTextureName, sizeof(char), 64, output);
 
 		// Write material file
-		outputMat << diffuseTextureName << " NONE " << 0.0f << 0.0f << '\n';
+		outputMat << diffuseTextureName << " NONE " << 0.0f << ' ' << 0.0f << '\n';
 
 		cout << '\n';
 
